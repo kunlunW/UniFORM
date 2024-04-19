@@ -121,12 +121,17 @@ def adjust_shifted_histograms(original_fd, shifted_fd, shifts):
             
             
 def normalize_and_plot_distributions(results_hist, keys, sample_names, reference_sample, bin_counts, xlim=None):
-    reference_index = sample_names.index(reference_sample)
+    # reference_index = sample_names.index(reference_sample)
     t = np.linspace(0, bin_counts-1, bin_counts)  # Assuming this is constant for all histograms
     shifts_fft_dict = {}
 
     for i, key in enumerate(keys):
+        
+        reference_index = sample_names.index(reference_sample[i])
+        
         print(f"********** Processing marker {key} **********")
+        
+        print(f"Reference sample for {key} is {reference_sample[i]}")
         
         # original distributions
         combined_fd = skfda.FDataGrid(results_hist[key]['hist_list'], sample_points=t, extrapolation="zeros")
@@ -168,4 +173,3 @@ def plot_distributions(fd, sample_names, t, key, title_suffix, i, xlim):
         
     plt.legend(fontsize="x-large")
     plt.show()
-    
