@@ -136,3 +136,57 @@ def process_samples(crc_dask_arrays, sample_names, marker_list, bin_counts, subp
     plt.show()
     
     return results_range, results_hist
+
+
+
+def process_samples_per_marker(crc_dask_arrays, sample_names, marker_list, bin_counts, if_grid, tissue_mask=True, xlims=None, ylims=None, save_filename=None):
+    num_markers = len(marker_list)
+    num_samples = len(sample_names)
+    
+    # Iterate over each marker
+    for marker_index, marker_name in enumerate(marker_list):
+        print(f"####################Processing {marker_name}####################")
+        
+        # Setup the figure for the current marker with 1 row and num_samples columns
+        fig, axes = plt.subplots(1, num_samples, figsize=(4 * num_samples, 4))
+        
+        # Iterate over each sample for the current marker
+        for sample_index, (dask_array, sample_name) in enumerate(zip(crc_dask_arrays, sample_names)):
+            print(f"Processing {sample_name} for marker {marker_name}......")
+            IF_dask_array = dask_array[marker_index].compute()  # Compute the slice for the current marker
+            tile_scaled = preprocess_raw(IF_dask_array)
+            
+            tile_scaled = tile_scaled[tile_scaled>0] 
+            
+            # Optionally apply a tissue mask
+            if tissue_mask:
+                # Placeholder: implement loading and applying tissue mask here
+                pass
+            
+            # Plot the histogram
+            ax = axes[sample_index]
+            hist, bin_edges = np.histogram(tile_scaled, bins=bin_counts)
+            ax.plot(bin_edges[:-1], hist, label=f'{sample_name}', alpha=0.7)
+            
+            ax.set_title(f'{marker_name}')
+            ax.set_xlabel('Log Scale Pixel Intensity')
+            ax.set_ylabel('Frequency')
+            ax.legend(loc='upper right')
+            ax.grid(if_grid)
+            
+            # Set x and y axis limits if specified
+            if xlims and marker_index < len(xlims) and xlims[marker_index]:
+                ax.set_xlim(xlims[marker_index])
+            if ylims and marker_index < len(ylims) and ylims[marker_index]:
+                ax.set_ylim(ylims[marker_index])
+        
+        plt.tight_layout()
+        
+        # Optionally save each figure with a specific marker name
+        if save_filename:
+            marker_specific_filename = f"{save_filename[:-4]}-{marker_name}.png"
+            plt.savefig(marker_specific_filename)
+            print(f"Figure saved as '{marker_specific_filename}' in current working directory")
+        
+        plt.show()
+        plt.close(fig)  # Close the figure window to free up memory and avoid display clutter
