@@ -3,7 +3,7 @@ EDA to determine variations in histograms
 
 Author: Mark Kunlun Wang <wangmar@ohsu.edu>
 Created: 02/20/2024
-Last Modified: 04/01/2024
+Last Modified: 04/19/2024
 
 Dependencies:
     - numpy

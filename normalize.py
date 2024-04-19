@@ -7,7 +7,7 @@ and adjusts shifted histograms.
 
 Author: Mark Kunlun Wang <wangmar@ohsu.edu>
 Created: 02/20/2024
-Last Modified: 04/01/2024
+Last Modified: 04/19/2024
 
 Dependencies:
     - numpy
@@ -21,6 +21,7 @@ from scipy.signal import correlate
 from scipy import stats
 import skfda
 import matplotlib.pyplot as plt
+from plot import plot_distributions
 
 
 def correlation_based_normalization(ref_hist, hist_list):
@@ -157,19 +158,3 @@ def normalize_and_plot_distributions(results_hist, keys, sample_names, reference
         print(f"{key} shifted KL Divergences:", metrics_results_shifted['kl_divergences'], "\n")
     
     return shifts_fft_dict
-
-
-def plot_distributions(fd, sample_names, t, key, title_suffix, i, xlim):
-    plt.figure(figsize=(10, 8))
-    title = f'{key} {title_suffix}'
-    for i, sample_name in enumerate(sample_names):
-        plt.plot(t, fd.data_matrix[i, :, 0], label=sample_name, alpha=0.7)
-    plt.title(title)
-    plt.xlabel('Grid Points')
-    plt.ylabel('Value')
-    
-    if xlim and i < len(xlim):
-        plt.xlim(xlim[i])
-        
-    plt.legend(fontsize="x-large")
-    plt.show()
