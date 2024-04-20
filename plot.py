@@ -48,7 +48,6 @@ def plot_gmm(X, im_name, marker_name, xlims=None):
     plt.axvline(cut, c='blue')
     plt.xlim(xlims)
     plt.show()
-    print(f"The threshold for {marker_name} is {np.exp(cut)}")
     return np.exp(cut)
 
 
