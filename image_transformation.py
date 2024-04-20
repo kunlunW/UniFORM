@@ -150,36 +150,40 @@ def process_and_stack_images(crc_dask_arrays, sample_names, marker_dict, shift_i
                 
                 if plot_single_cell_img:
                     # Create a large figure to hold all subplots
-                    fig, axes = plt.subplots(10, 4, figsize=(20, 20))  # Adjusted to have 10 rows instead of 5
-                    axes_flat = axes.flatten()
-
-                    # Plot the first batch of cells (original)
+                    
                     props = regionprops(cell_mask_resized)
-                    for i, prop in enumerate(props[30000:30020]):
+                    
+                    fig, axes = plt.subplots(5, 10, figsize=(20, 10))
+                    axes_flat = axes.flatten()
+                    for i, prop in enumerate(props[30000:30050]):
                         minr, minc, maxr, maxc = prop.bbox
                         cell_image = CRC_marker_raw_uint16[minr:maxr, minc:maxc]
-                        ax = axes_flat[i]  # Use the first half of the axes for the first batch
+                        ax = axes_flat[i]
                         ax.imshow(cell_image)
                         ax.set_title(f'Cell ID: {prop.label}', fontsize=6)
                         ax.axis('off')  # Hide axes ticks
 
-                    # Plot the second batch of cells (normalized)
-                    for i, prop in enumerate(props[30000:30020]):
+                    fig.suptitle(f'Random batch of single cells from original CRC0{sample_index+1} {marker}', fontsize=25)
+                    plt.tight_layout()
+                    plt.show()
+                    
+                    fig, axes = plt.subplots(5, 10, figsize=(20, 10))
+                    axes_flat = axes.flatten()
+                    for i, prop in enumerate(props[30000:30050]):
                         minr, minc, maxr, maxc = prop.bbox
                         cell_image = CRC_marker_shifted_uint16[minr:maxr, minc:maxc]
-                        ax = axes_flat[i + 20]  # Use the second half of the axes for the second batch
+                        ax = axes_flat[i]
                         ax.imshow(cell_image)
                         ax.set_title(f'Cell ID: {prop.label}', fontsize=6)
                         ax.axis('off')  # Hide axes ticks
 
-                    # Add a figure-wide title and adjust layout
-                    fig.suptitle(f'Random batch of single cells from CRC0{sample_index+1} {marker}', fontsize=25)
+                    fig.suptitle(f'Random batch of single cells from normalized CRC0{sample_index+1} {marker}', fontsize=25)
                     plt.tight_layout()
                     plt.show()
                     
                 
                 if gmm_analysis: 
-                    original_threshold = plot_gmm(original_X_mesmer['intensity_mean'].reshape(-1, 1), f"CRC0{sample_index+1} {marker} Original", f"{marker} Original", xlims=(4,9))
+                    original_threshold = plot_gmm(original_X_mesmer['intensity_mean'].reshape(-1, 1), f"CRC0{sample_index+1} {marker} Original", f"{marker} Original", xlims=(4,12))
                     condition_met = original_X_mesmer['intensity_mean'] >= original_threshold
                     proportion_ge_threshold = np.mean(condition_met)
                     num_ge_threshold = np.sum(condition_met)
@@ -187,7 +191,7 @@ def process_and_stack_images(crc_dask_arrays, sample_names, marker_dict, shift_i
                     print(f"Proportion of positive population >= {original_threshold}: {proportion_ge_threshold*100}%")
                     print(f"Number of positive population >= {original_threshold}: {num_ge_threshold}")
                     
-                    normalized_threshold = plot_gmm(normalized_X_mesmer['intensity_mean'].reshape(-1, 1), f"CRC0{sample_index+1} {marker} Normalized", f"{marker} Normalized", xlims=(4,9))
+                    normalized_threshold = plot_gmm(normalized_X_mesmer['intensity_mean'].reshape(-1, 1), f"CRC0{sample_index+1} {marker} Normalized", f"{marker} Normalized", xlims=(4, 12))
                     condition_met = normalized_X_mesmer['intensity_mean'] >= normalized_threshold
                     proportion_ge_threshold = np.mean(condition_met)
                     num_ge_threshold = np.sum(condition_met)
