@@ -73,7 +73,7 @@ def plot_correlations_and_fit_line(original_intensity, normalized_intensity, tit
     r_squared = pearson_corr**2
 
     # Plotting
-    plt.figure(figsize=(6, 6), dpi=300)
+    plt.figure(figsize=(5, 5), dpi=300)
     plt.scatter(original_intensity, normalized_intensity)
     plt.title(title)
     plt.xlabel(xlabel)
@@ -116,18 +116,18 @@ def plot_line_histogram(ax, image, label, alpha=0.9, n_bins=1024):
     ax.plot(bins[:-1], hist, label=label, alpha=alpha)
 
 
-
-def plot_distributions(fd, sample_names, t, key, title_suffix, i, xlim):
-    plt.figure(figsize=(10, 8))
+    
+def plot_distributions(fd, sample_names, t, key, title_suffix, xlim_index, xlim):
+    plt.figure(figsize=(5, 5), dpi=300)
     title = f'{key} {title_suffix}'
-    for i, sample_name in enumerate(sample_names):
-        plt.plot(t, fd.data_matrix[i, :, 0], label=sample_name, alpha=0.7)
+    for index, sample_name in enumerate(sample_names):
+        plt.plot(t, fd.data_matrix[index, :, 0], label=sample_name, alpha=0.7)
     plt.title(title)
     plt.xlabel('Grid Points')
     plt.ylabel('Value')
     
-    if xlim and i < len(xlim):
-        plt.xlim(xlim[i])
+    if xlim and xlim_index < len(xlim):
+        plt.xlim(xlim[xlim_index])
         
     plt.legend(fontsize="x-large")
     plt.show()

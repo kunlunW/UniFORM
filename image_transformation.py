@@ -19,12 +19,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tifffile
 from skimage.io import imread
-from skimage.measure import regionprops_table
+from skimage.measure import regionprops_table, regionprops
 from skimage.transform import resize
 
 from plot import plot_gmm, plot_correlations_and_fit_line, plot_line_histogram
 
-def process_and_stack_images(crc_dask_arrays, sample_names, marker_dict, shift_in_log_pixels_dict, reference_sample, num_bins, output_directory, plot_img=True, plot_dist=True, plot_single_cell_corr=True, gmm_analysis=True, save_image=True):
+def process_and_stack_images(crc_dask_arrays, sample_names, marker_dict, shift_in_log_pixels_dict, reference_sample, num_bins, output_directory, segmentation_mask_dir=None, plot_img=True, plot_dist=True, plot_single_cell_corr=True, plot_single_cell_img=True, gmm_analysis=True, save_image=True):
 
     print("##############################Calculating stretch constant##############################\n")
     # calculating the stretch scaling factor
@@ -131,9 +131,8 @@ def process_and_stack_images(crc_dask_arrays, sample_names, marker_dict, shift_i
                 
                 
             if plot_single_cell_corr: 
-                data_dir = '/home/groups/ChangLab/dataset/Orion_CRC'
                 sample_name = f"CRC0{sample_index+1}"
-                mesmer_mask_fname = f'{data_dir}/mesmer_masks/{sample_name.lower()}_mesmer_cell_mask.tif'
+                mesmer_mask_fname = f'{segmentation_mask_dir}/{sample_name.lower()}_mesmer_cell_mask.tif'
                 cell_mask = imread(mesmer_mask_fname)
                 cell_mask_resized = resize(cell_mask, CRC_marker_raw_uint16.shape, order=0)
                 
@@ -148,6 +147,36 @@ def process_and_stack_images(crc_dask_arrays, sample_names, marker_dict, shift_i
                     ylabel=f'CRC0{sample_index+1} {marker} Normalized (original scale)'
                 )
                 
+                
+                if plot_single_cell_img:
+                    # Create a large figure to hold all subplots
+                    fig, axes = plt.subplots(10, 4, figsize=(20, 20))  # Adjusted to have 10 rows instead of 5
+                    axes_flat = axes.flatten()
+
+                    # Plot the first batch of cells (original)
+                    props = regionprops(cell_mask_resized)
+                    for i, prop in enumerate(props[30000:30020]):
+                        minr, minc, maxr, maxc = prop.bbox
+                        cell_image = CRC_marker_raw_uint16[minr:maxr, minc:maxc]
+                        ax = axes_flat[i]  # Use the first half of the axes for the first batch
+                        ax.imshow(cell_image)
+                        ax.set_title(f'Cell ID: {prop.label}', fontsize=6)
+                        ax.axis('off')  # Hide axes ticks
+
+                    # Plot the second batch of cells (normalized)
+                    for i, prop in enumerate(props[30000:30020]):
+                        minr, minc, maxr, maxc = prop.bbox
+                        cell_image = CRC_marker_shifted_uint16[minr:maxr, minc:maxc]
+                        ax = axes_flat[i + 20]  # Use the second half of the axes for the second batch
+                        ax.imshow(cell_image)
+                        ax.set_title(f'Cell ID: {prop.label}', fontsize=6)
+                        ax.axis('off')  # Hide axes ticks
+
+                    # Add a figure-wide title and adjust layout
+                    fig.suptitle(f'Random batch of single cells from CRC0{sample_index+1} {marker}', fontsize=25)
+                    plt.tight_layout()
+                    plt.show()
+                    
                 
                 if gmm_analysis: 
                     original_threshold = plot_gmm(original_X_mesmer['intensity_mean'].reshape(-1, 1), f"CRC0{sample_index+1} {marker} Original", f"{marker} Original", xlims=(4,9))
@@ -176,3 +205,18 @@ def process_and_stack_images(crc_dask_arrays, sample_names, marker_dict, shift_i
             print(f"Stacked TIFF for CRC0{sample_index+1} saved.")
         
     print("##############################Normalization Done##############################\n\n")
+    
+    
+    
+def calculate_shift_in_log_pixels(results_range, keys, bin_counts, shifts_fft_dict):
+    shift_in_log_pixels_dict = {}
+    for key in keys:
+        print(f"********** Processing marker {key} **********")
+        min_val = results_range[key]['global_min']
+        max_val = results_range[key]['global_max']
+        increment = (max_val - min_val) / (bin_counts - 1)
+        shifts = shifts_fft_dict[key]
+        shift_in_log_pixels = [shift * increment for shift in shifts]
+        shift_in_log_pixels_dict[key] = shift_in_log_pixels
+        print(f"shift_in_log_pixels for {key} is {shift_in_log_pixels}")
+    return shift_in_log_pixels_dict
