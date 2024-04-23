@@ -121,7 +121,7 @@ def adjust_shifted_histograms(original_fd, shifted_fd, shifts):
             
             
             
-def normalize_and_plot_distributions(results_hist, keys, sample_names, reference_sample, bin_counts, xlim=None):
+def normalize_and_plot_distributions(results_hist, keys, sample_names, reference_sample, bin_counts, dpi=300, xlim=None):
     # reference_index = sample_names.index(reference_sample)
     t = np.linspace(0, bin_counts-1, bin_counts)  # Assuming this is constant for all histograms
     shifts_fft_dict = {}
@@ -130,31 +130,40 @@ def normalize_and_plot_distributions(results_hist, keys, sample_names, reference
         
         reference_index = sample_names.index(reference_sample[i])
         
-        print(f"********** Processing marker {key} **********")
-        
+        print(f"****************************** Processing marker {key} ******************************")
         print(f"Reference sample for {key} is {reference_sample[i]}")
+        
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 3), dpi=dpi)
         
         # original distributions
         combined_fd = skfda.FDataGrid(results_hist[key]['hist_list'], sample_points=t, extrapolation="zeros")
         metrics_results = calculate_correlations_and_divergences(combined_fd)
-        plot_distributions(combined_fd, sample_names, t, key, "Original Distributions", i, xlim)
-        print(f"{key} Pearson Correlation Coefficients:", metrics_results['pearson_correlations'])
-        print(f"{key} Spearman Correlation Coefficients:", metrics_results['spearman_correlations'])
-        print(f"{key} KL Divergences:", metrics_results['kl_divergences'], "\n")
-        
+        # plot_distributions(combined_fd, sample_names, t, key, "Original Distributions", i, xlim)
+        plot_distributions(combined_fd, sample_names, t, key, "Original Distributions", i, xlim, fig, ax1)
         
         # normalized/aligned distributions
         shifts_direct, shifts_fft, _, _ = correlation_based_normalization(combined_fd.data_matrix[reference_index], combined_fd.data_matrix)
         shifts_fft_dict[key] = shifts_fft
-        print(f"{key} shifts_direct is: {shifts_direct}")
-        print(f"{key} shifts_fft is:    {shifts_fft}")
+        
         combined_fd_shifted = combined_fd.shift(shifts_fft, restrict_domain=False)    
         adjust_shifted_histograms(combined_fd, combined_fd_shifted, shifts_fft)
         metrics_results_shifted = calculate_correlations_and_divergences(combined_fd_shifted)
-        plot_distributions(combined_fd_shifted, sample_names, t, key, "Normalized Distributions", i, xlim)
+        # plot_distributions(combined_fd_shifted, sample_names, t, key, "Normalized Distributions", i, xlim)
+        plot_distributions(combined_fd_shifted, sample_names, t, key, "Normalized Distributions", i, xlim, fig, ax2)
+        plt.show() 
         
+        print(f"##### Metrics for original marker image #####")
+        print(f"{key} Pearson Correlation Coefficients:", metrics_results['pearson_correlations'])
+        print(f"{key} Spearman Correlation Coefficients:", metrics_results['spearman_correlations'])
+        print(f"{key} KL Divergences:", metrics_results['kl_divergences'], "\n")
+        
+        print(f"##### Metrics for shifted marker image #####")
         print(f"{key} shifted Pearson Correlation Coefficients:", metrics_results_shifted['pearson_correlations'])
         print(f"{key} shifted Spearman Correlation Coefficients:", metrics_results_shifted['spearman_correlations'])
         print(f"{key} shifted KL Divergences:", metrics_results_shifted['kl_divergences'], "\n")
     
+        print(f"{key} shifts_direct is: {shifts_direct}")
+        print(f"{key} shifts_fft is:    {shifts_fft}\n")
+        
+        
     return shifts_fft_dict

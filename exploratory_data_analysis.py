@@ -21,7 +21,7 @@ def preprocess_raw(image):
     ch[ch == -np.inf] = 0
     return ch
 
-def process_samples(crc_dask_arrays, sample_names, marker_list, bin_counts, subplots_per_row, if_grid, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
+def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subplots_per_row, if_grid, dpi=300, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
     results_range = {}
     results_hist = {}
     
@@ -30,7 +30,7 @@ def process_samples(crc_dask_arrays, sample_names, marker_list, bin_counts, subp
     
     num_markers = len(marker_list)
     rows_needed = np.ceil(num_markers / subplots_per_row).astype(int)
-    fig, axes = plt.subplots(rows_needed, subplots_per_row, figsize=(20, rows_needed * 4), squeeze=False)
+    fig, axes = plt.subplots(rows_needed, subplots_per_row, figsize=(20, rows_needed * 4), dpi=dpi, squeeze=False)
     axes = axes.flatten()
     
     for marker_index, marker_name in enumerate(marker_list):
@@ -42,7 +42,7 @@ def process_samples(crc_dask_arrays, sample_names, marker_list, bin_counts, subp
         marker_hist_data = []
         
         # First loop: Determine global min and max for the marker across all samples
-        for dask_array, sample_name in zip(crc_dask_arrays, sample_names):
+        for dask_array, sample_name in zip(if_dask_arrays, sample_names):
             print(f"Processing {sample_name}......")
             IF_dask_array = dask_array[marker_index]
             tile_raw = IF_dask_array.compute()
@@ -83,7 +83,7 @@ def process_samples(crc_dask_arrays, sample_names, marker_list, bin_counts, subp
         hist_list = []
         bin_edge_list = []
         ax = axes[marker_index]
-        for dask_array, sample_name in zip(crc_dask_arrays, sample_names):
+        for dask_array, sample_name in zip(if_dask_arrays, sample_names):
             IF_dask_array = dask_array[marker_index]
             tile_raw = IF_dask_array.compute()
             tile_scaled = preprocess_raw(tile_raw)
@@ -93,7 +93,6 @@ def process_samples(crc_dask_arrays, sample_names, marker_list, bin_counts, subp
                 print(f"loading contour mask for sample {sample_name}")
                 HE_tissue_mask_path = tissue_mask_paths.get(sample_name)
                 
-                # HE_tissue_mask_path = f'{crc_dir}/{sample_name}/{sample_name}_reinhard_mask.tiff' if sample_name != 'CRC01' else f'{crc_dir}/CRC01/CRC01_reinhard_mask.tiff'
                 HE_tissue_mask = imread(HE_tissue_mask_path)
                 
                 if HE_tissue_mask.shape != tile_scaled.shape:
@@ -139,7 +138,7 @@ def process_samples(crc_dask_arrays, sample_names, marker_list, bin_counts, subp
 
 
 
-def process_samples_per_marker(crc_dask_arrays, sample_names, marker_list, bin_counts, if_grid, tissue_mask=True, xlims=None, ylims=None, save_filename=None):
+def process_samples_per_marker(if_dask_arrays, sample_names, marker_list, bin_counts, if_grid, dpi=300, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
     num_markers = len(marker_list)
     num_samples = len(sample_names)
     
@@ -148,20 +147,31 @@ def process_samples_per_marker(crc_dask_arrays, sample_names, marker_list, bin_c
         print(f"####################Processing {marker_name}####################")
         
         # Setup the figure for the current marker with 1 row and num_samples columns
-        fig, axes = plt.subplots(1, num_samples, figsize=(4 * num_samples, 4))
+        fig, axes = plt.subplots(1, num_samples, figsize=(4 * num_samples, 4), dpi=dpi, squeeze=False)
         
         # Iterate over each sample for the current marker
-        for sample_index, (dask_array, sample_name) in enumerate(zip(crc_dask_arrays, sample_names)):
+        for sample_index, (dask_array, sample_name) in enumerate(zip(if_dask_arrays, sample_names)):
             print(f"Processing {sample_name} for marker {marker_name}......")
             IF_dask_array = dask_array[marker_index].compute()  # Compute the slice for the current marker
             tile_scaled = preprocess_raw(IF_dask_array)
             
             tile_scaled = tile_scaled[tile_scaled>0] 
             
-            # Optionally apply a tissue mask
             if tissue_mask:
-                # Placeholder: implement loading and applying tissue mask here
-                pass
+                # need to change for the biolib and ACED dataset
+                print(f"loading contour mask for sample {sample_name}")
+                HE_tissue_mask_path = tissue_mask_paths.get(sample_name)
+                
+                HE_tissue_mask = imread(HE_tissue_mask_path)
+                
+                if HE_tissue_mask.shape != tile_scaled.shape:
+                    contour_mask = resize(HE_tissue_mask, tile_scaled.shape, order=0)
+                else:
+                    contour_mask = HE_tissue_mask  
+                tile_scaled_masked = tile_scaled[contour_mask]
+                
+            else:
+                tile_scaled_masked = tile_scaled
             
             # Plot the histogram
             ax = axes[sample_index]
