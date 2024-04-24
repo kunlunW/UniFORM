@@ -21,7 +21,7 @@ def preprocess_raw(image):
     ch[ch == -np.inf] = 0
     return ch
 
-def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subplots_per_row, if_grid, dpi=300, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
+def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subplots_per_row, if_grid, dpi=300, exlucde_zero=False, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
     results_range = {}
     results_hist = {}
     
@@ -47,6 +47,9 @@ def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subpl
             IF_dask_array = dask_array[marker_index]
             tile_raw = IF_dask_array.compute()
             tile_scaled = preprocess_raw(tile_raw)
+            
+            if exlucde_zero: 
+                tile_scaled = tile_scaled[tile_scaled>0] 
             
             if tissue_mask:
                 # need to change for the biolib and ACED dataset
@@ -87,6 +90,9 @@ def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subpl
             IF_dask_array = dask_array[marker_index]
             tile_raw = IF_dask_array.compute()
             tile_scaled = preprocess_raw(tile_raw)
+            
+            if exlucde_zero: 
+                tile_scaled = tile_scaled[tile_scaled>0]
             
             if tissue_mask:
                 # need to change for the biolib and ACED dataset
@@ -138,7 +144,7 @@ def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subpl
 
 
 
-def process_samples_per_marker(if_dask_arrays, sample_names, marker_list, bin_counts, if_grid, dpi=300, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
+def process_samples_per_marker(if_dask_arrays, sample_names, marker_list, bin_counts, if_grid, dpi=300, exlucde_zero=False, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
     num_markers = len(marker_list)
     num_samples = len(sample_names)
     
@@ -155,7 +161,10 @@ def process_samples_per_marker(if_dask_arrays, sample_names, marker_list, bin_co
             IF_dask_array = dask_array[marker_index].compute()  # Compute the slice for the current marker
             tile_scaled = preprocess_raw(IF_dask_array)
             
-            tile_scaled = tile_scaled[tile_scaled>0] 
+            tile_scaled = tile_scaled[tile_scaled>0]
+            
+            if exlucde_zero: 
+                tile_scaled = tile_scaled[tile_scaled>0] 
             
             if tissue_mask:
                 # need to change for the biolib and ACED dataset
