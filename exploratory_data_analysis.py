@@ -101,14 +101,14 @@ def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subpl
                 else:
                     contour_mask = HE_tissue_mask   
                     
-                tile_scaled_masked = tile_scaled[contour_mask]
+                tile_scaled = tile_scaled[contour_mask]
                 
             else:
                 print(f"- Using all pixels")
-                tile_scaled_masked = tile_scaled
+                tile_scaled = tile_scaled
 
-            min_val = tile_scaled_masked.min()
-            max_val = tile_scaled_masked.max()
+            min_val = tile_scaled.min()
+            max_val = tile_scaled.max()
             min_list.append(min_val)
             max_list.append(max_val)
             
@@ -141,12 +141,12 @@ def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subpl
                     contour_mask = resize(HE_tissue_mask, tile_scaled.shape, order=0)
                 else:
                     contour_mask = HE_tissue_mask  
-                tile_scaled_masked = tile_scaled[contour_mask]
+                tile_scaled = tile_scaled[contour_mask]
                 
             else:
-                tile_scaled_masked = tile_scaled
+                tile_scaled = tile_scaled
 
-            hist, bin_edges = np.histogram(tile_scaled_masked, bins=bin_counts, range=(global_min, global_max))
+            hist, bin_edges = np.histogram(tile_scaled, bins=bin_counts, range=(global_min, global_max))
             hist_list.append(hist)
             bin_edge_list.append(bin_edges)
             ax.plot(bin_edges[:-1], hist, label=f'{sample_name}', alpha=0.7)
@@ -323,10 +323,10 @@ def process_samples_per_marker(if_dask_arrays, sample_names, marker_list, bin_co
                     contour_mask = resize(HE_tissue_mask, tile_scaled.shape, order=0)
                 else:
                     contour_mask = HE_tissue_mask  
-                tile_scaled_masked = tile_scaled[contour_mask]
+                tile_scaled = tile_scaled[contour_mask]
                 
             else:
-                tile_scaled_masked = tile_scaled
+                tile_scaled = tile_scaled
             
             # Plot the histogram
             ax = axes[sample_index]

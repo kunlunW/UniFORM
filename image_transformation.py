@@ -22,6 +22,7 @@ from skimage.io import imread
 from skimage.measure import regionprops_table, regionprops
 from skimage.transform import resize
 import os
+import pickle
 
 from plot import plot_gmm, plot_correlations_and_fit_line, plot_line_histogram
 from constants import ome_tiff_dimension_order, ome_tiff_metadata_dict
@@ -272,8 +273,8 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, shift_in
                     from pyometiff import OMETIFFWriter
                     writer = OMETIFFWriter(
                         fpath=os.path.join(folder_path, f"{sample_names[sample_index]}_normalized.ome.tiff"),
-                        dimension_order=dimension_order,
-                        metadata=metadata_dict,
+                        dimension_order=ome_tiff_dimension_order,
+                        metadata=ome_tiff_metadata_dict,
                         array=stacked_images,
                         explicit_tiffdata=False)
                     writer.write()
@@ -335,9 +336,9 @@ def generate_normalized_feature(feature_data, sample_names, marker_dict, shift_i
             print(f"shift scaling factor for {marker} is {np.exp(negated_list[sample_index])}")
             marker_shifted = marker_raw * np.exp(negated_list[sample_index])
                 
-            marker_raw = np.clip(marker_raw, 0, 65535)
-            marker_shifted = np.clip(marker_shifted, 0, 65535)
-            reference_marker_raw = np.clip(reference_marker_raw, 0, 65535)
+            # marker_raw = np.clip(marker_raw, 0, 65535)
+            # marker_shifted = np.clip(marker_shifted, 0, 65535)
+            # reference_marker_raw = np.clip(reference_marker_raw, 0, 65535)
                 
             # Create a figure with three subplots side by side
             if plot_dist: 
