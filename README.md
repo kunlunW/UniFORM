@@ -9,22 +9,6 @@
 </div>
 
 
-
-<!-- Table of Contents -->
-# :notebook_with_decorative_cover: Table of Contents
-
-- [About the Project](#star2-about-the-project)
-  * [Overview](#camera-overview)
-  * [Tech Stack](#dart-tech-stack)
-- [Getting Started](#toolbox-getting-started)
-  * [Dependencies](#bangbang-dependencies)
-  * [Installation](#gear-installation)
-  * [Workflow](#test_tube-workflow)
-- [FAQ](#grey_question-faq)
-- [License](#warning-license)
-- [Contact](#handshake-contact)
-- [Acknowledgements](#gem-acknowledgements)
-
   
 
 <!-- About the Project -->
@@ -34,15 +18,15 @@
 <!-- Screenshots -->
 ### :camera: Overview
 
-Universal CyCIF normalization pipeline both on pixel-level and feature-level
+Universal CyCIF normalization pipeline both on pixel-level and feature-level, enabling robust, scalable preprocessing for high-dimensional cytometry data. This pipeline allows users to normalize CyCIF images and data across multiple samples to facilitate comparative and quantitative analysis.
 
 
 <!-- TechStack -->
 ### :dart: Tech Stack
 
 <ul>
-    <li></li>
-    <li></li>
+    <li>...</li>
+  
 </ul>
 
 
@@ -54,97 +38,27 @@ Universal CyCIF normalization pipeline both on pixel-level and feature-level
 <!-- Prerequisites -->
 ### :bangbang: Dependencies
 
-```bash
-- will update
-```
+Required Python libraries:
 
+```bash
+pip install ...
+```
 
 <!-- Installation -->
-### :gear: Installation
-
-Create a virtual environment to cycif normalization is highly recommended! We have set up a yaml file 
+:gear: Installation
+It is highly recommended to create a virtual environment for the CyCIF normalization project. You can set up the environment using the provided YAML file:
 
 ```bash
-will update
+conda env create -f environment.yml
+conda activate cycif-normal-env
 ```
-   
+
 <!-- Running Tests -->
-### :test_tube: Workflow
+:test_tube: Workflow
+```exploratory_data_analysis.py``` -> ```normalize.py``` --> ```image_transformation.py```
 
-`run_histogram.py` -> `run_normalization.py` -> `run_evaluationb.py`
-
-
-### run_histogram
-To run run_histogram.py, use the following command:
-
-```
-will update
-```
-
-#### Parameters
-- **`--parameter`**: will update.  
-  Example: `will update`
+### Exploratory Data Analysis
+To begin the normalization process, first analyze the data using:
 
 
 
-### run_normalization
-To run run_normalization.py, use the following command:
-
-    
-```bash
-will update
-```
-
-
-#### Parameters
-- **`--parameter`**: will update.  
-  Example: `will update`
-
-
-
-#### Expected output: 
-
-
-### Run evaluation
-To run the script, use the following command:
-
-```
-will update
-```
-
-
-<!-- FAQ -->
-## :grey_question: FAQ
-
-- Question 1
-
-  + Answer 1
-
-- Question 2
-
-  + Answer 2
-
-
-<!-- License -->
-## :warning: License
-
-Distributed under the no License. See LICENSE.txt for more information.
-
-
-<!-- Contact -->
-## :handshake: Contact
-
-
-<!-- Acknowledgments -->
-## :gem: Acknowledgements
-
-
-
-
-
-
-
-# CyCIF-Normalization
-repo for cycif normalization
-
-![image](https://github.com/kunlunW/CyCIF-Normalization/assets/52982585/49843432-d371-41ff-9927-ab7d2d868a18)
