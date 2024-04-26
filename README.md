@@ -40,9 +40,7 @@ Universal CyCIF normalization pipeline both on pixel-level and feature-level, en
 
 Required Python libraries:
 
-```bash
-pip install ...
-```
+```numpy```, ```matplotlib```, ```pickle```, ```pandas```, ```dask```, ```zarr```, ```scikit-image```, ```tifffile```, ```pyometiff```, ```scikit-learn```, ```scipy```, ```scikit-fda```
 
 <!-- Installation -->
 :gear: Installation
