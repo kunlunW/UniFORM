@@ -25,6 +25,20 @@ from plot import plot_distributions
 
 
 def correlation_based_normalization(ref_hist, hist_list):
+    """
+    Calculate histogram shifts using both direct and FFT-based correlation methods.
+
+    Parameters:
+    ref_hist (array_like): The reference histogram array.
+    hist_list (list of array_like): A list of histograms to be normalized relative to the reference histogram.
+
+    Returns:
+    tuple: A tuple containing four elements:
+        - shifts_direct (list of int): List of shift values calculated using direct correlation.
+        - shifts_fft (list of int): List of shift values calculated using FFT-based correlation.
+        - correlation_list_direct (list of array_like): List of correlation results using direct method.
+        - correlation_list_fft (list of array_like): List of correlation results using FFT method.
+    """
     shifts_direct = []
     shifts_fft = []
     
@@ -51,16 +65,18 @@ def correlation_based_normalization(ref_hist, hist_list):
 
 def calculate_correlations_and_divergences(combined_fd):
     """
-    Calculates Pearson and Spearman correlations and KL divergence for each histogram in a given functional data set
-    against the reference histogram.
-    
+    Calculates Pearson and Spearman correlations, and Kullback-Leibler divergence for histograms.
+
+    This function processes a set of histograms (functional data) and computes the Pearson and Spearman
+    correlations as well as the KL divergence against the reference histogram.
+
     Parameters:
-    - combined_fd: A functional data object containing the histograms and their bin edges.
-    
+    combined_fd (FDataGrid): A functional data grid object containing the histograms and their bin edges.
+
     Returns:
-    - A dictionary containing lists of Pearson correlations, Spearman correlations, and KL divergences.
+    dict: A dictionary with three keys: 'pearson_correlations', 'spearman_correlations', and 'kl_divergences'.
+          Each key maps to a list of the corresponding values calculated against the reference histogram.
     """
-    
     # Calculate Pearson and Spearman correlations for each histogram against the reference
     pearson_correlations = []
     spearman_correlations = []
@@ -94,19 +110,20 @@ def calculate_correlations_and_divergences(combined_fd):
         "kl_divergences": kl_divergences
     }
 
+
+
 def adjust_shifted_histograms(original_fd, shifted_fd, shifts):
     """
-    Adjust the first bin of each shifted histogram based on the shift values.
+    Adjust the first bin of shifted histograms to correct for artifacts introduced by shifting operations.
 
     Parameters:
-    - original_fd: The original functional data object containing unshifted histograms.
-    - shifted_fd: The functional data object containing histograms after shifts.
-    - shifts: A list of integers representing the shift for each histogram. Positive
-              values indicate a leftward shift, and negative values indicate a
-              rightward shift.
+    original_fd (FDataGrid): The original functional data object containing unshifted histograms.
+    shifted_fd (FDataGrid): The functional data object containing histograms after applying shifts.
+    shifts (list of int): A list of integers representing the shift for each histogram. Positive values
+                          indicate a leftward shift, and negative values indicate a rightward shift.
 
     Returns:
-    - Adjusts the shifted_fd data_matrix in place. No return value.
+    None: The function modifies the shifted_fd data_matrix in place to realign histogram bins and does not return any value.
     """
     for i, shift in enumerate(shifts):
         if shift > 0:
@@ -120,21 +137,37 @@ def adjust_shifted_histograms(original_fd, shifted_fd, shifts):
             shifted_fd.data_matrix[i][shift_to_index] = np.array([0.])
             
             
-            
 def normalize_and_plot_distributions(results_hist, keys, sample_names, reference_sample, bin_counts, dpi=300, xlim=None):
+    """
+    Normalize histograms based on correlation-based shifts and plot both original and normalized distributions.
+
+    This function normalizes histograms for various markers using shifts determined by correlation and plots
+    the results, displaying the changes and statistical metrics before and after normalization.
+
+    Parameters:
+    results_hist (dict): Dictionary mapping each marker to its histogram data.
+    keys (list of str): List of marker keys specifying which histograms to normalize.
+    sample_names (list of str): List of sample names corresponding to each histogram.
+    reference_sample (list of str): List specifying reference samples for each marker.
+    bin_counts (int): The number of bins in each histogram.
+    dpi (int): Dots per inch resolution for the generated plots.
+    xlim (tuple, optional): X-axis limits for plotting histograms.
+
+    Returns:
+    dict: A dictionary mapping each marker to its list of shift values determined by FFT.
+    """
     # reference_index = sample_names.index(reference_sample)
     t = np.linspace(0, bin_counts-1, bin_counts)  # Assuming this is constant for all histograms
     shifts_fft_dict = {}
 
     for i, key in enumerate(keys):
-        
         reference_index = sample_names.index(reference_sample[i])
-        
+    
         print(f"****************************** Processing marker {key} ******************************")
         print(f"Reference sample for {key} is {reference_sample[i]}")
         
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 3), dpi=dpi)
-        
+
         # original distributions
         combined_fd = skfda.FDataGrid(results_hist[key]['hist_list'], sample_points=t, extrapolation="zeros")
         metrics_results = calculate_correlations_and_divergences(combined_fd)
@@ -164,6 +197,5 @@ def normalize_and_plot_distributions(results_hist, keys, sample_names, reference
     
         print(f"{key} shifts_direct is: {shifts_direct}")
         print(f"{key} shifts_fft is:    {shifts_fft}\n")
-        
         
     return shifts_fft_dict

@@ -98,3 +98,15 @@ marker_list = ['Hoechst',
 
 
 reference_sample = ['CRC01', 'CRC01', 'CRC01', 'CRC02', 'CRC02', 'CRC01', 'CRC02', 'CRC01', 'CRC02', 'CRC01', 'CRC01', 'CRC01', 'CRC02', 'CRC05', 'CRC01', 'CRC01', 'CRC02', 'CRC01', 'CRC01']
+
+
+# below are the parameters used for saving the normalized images as ome.tiff
+ome_tiff_metadata_dict = {
+    "PhysicalSizeX" : "0.65", # this is usually 10x resolution, for 20x resolution, use 0.325
+    "PhysicalSizeXUnit" : "µm",
+    "PhysicalSizeY" : "0.65",
+    "PhysicalSizeYUnit" : "µm",
+    "Channels" : {marker: {'Name': marker} for marker in marker_list}
+    }
+
+ome_tiff_dimension_order = "CYX"
