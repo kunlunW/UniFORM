@@ -11,47 +11,50 @@
 
   
 
-<!-- About the Project -->
 ## :star2: About the Project
 
 
-<!-- Screenshots -->
 ### :camera: Overview
 
-Universal CyCIF normalization pipeline both on pixel-level and feature-level, enabling robust, scalable preprocessing for high-dimensional cytometry data. This pipeline allows users to normalize CyCIF images and data across multiple samples to facilitate comparative and quantitative analysis.
+Universal CyCIF (Cyclic Immunofluorescence) normalization pipeline both on pixel-level and feature-level, enabling robust, scalable preprocessing for high-dimensional CyCIF data. This pipeline allows users to normalize CyCIF images and data across multiple samples to facilitate comparative and quantitative analysis.
 
 
-<!-- TechStack -->
 ### :dart: Tech Stack
 
 <ul>
-    <li>...</li>
-  
+    <li>numpy</li>
+    <li>matplotlib</li>
+    <li>pandas</li>
+    <li>dask</li>
+    <li>zarr</li>
+    <li>scikit-image</li>
+    <li>tifffile</li>
+    <li>pyometiff</li>
+    <li>scikit-learn</li>
+    <li>scipy</li>
+    <li>scikit-fda</li>
 </ul>
 
 
 
-<!-- Getting Started -->
 ## 	:toolbox: Getting Started
 
 
-<!-- Prerequisites -->
-### :bangbang: Dependencies
-
-Required Python libraries:
-
-```numpy```, ```matplotlib```, ```pickle```, ```pandas```, ```dask```, ```zarr```, ```scikit-image```, ```tifffile```, ```pyometiff```, ```scikit-learn```, ```scipy```, ```scikit-fda```
-
 <!-- Installation -->
 :gear: Installation
-It is highly recommended to create a virtual environment for the CyCIF normalization project. You can set up the environment using the provided YAML file:
+It is highly recommended to create a virtual environment for the CyCIF normalization. You can set up the environment using the provided YAML file:
 
+You can install the latest version of the packages above using environment.yml
 ```bash
 conda env create -f environment.yml
-conda activate cycif-normal-env
+conda activate cycif-normalization-env
+```
+In case there's package comnflicts or incompatibility, you can use my environment setup
+```bash
+conda env create -f environment-mark-version.yml
+conda activate cycif-normalization-env
 ```
 
-<!-- Running Tests -->
 :test_tube: Workflow
 ```exploratory_data_analysis.py``` -> ```normalize.py``` --> ```image_transformation.py```
 
