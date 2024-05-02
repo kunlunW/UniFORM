@@ -59,7 +59,7 @@ def calculate_shift_in_log_pixels(results_range, keys, bin_counts, shifts_fft_di
     return shift_in_log_pixels_dict
 
 
-def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, shift_in_log_pixels_dict, reference_sample, num_bins, output_directory, dpi=300, segmentation_mask_path=None, plot_img=True, plot_dist=True, plot_single_cell_corr=True, plot_single_cell_img=True, gmm_analysis=True, save_image=True, save_ome_tiff=True):
+def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, marker_to_skip, shift_in_log_pixels_dict, reference_sample, num_bins, output_directory, dpi=300, segmentation_mask_path=None, plot_img=True, plot_dist=True, plot_single_cell_corr=True, plot_single_cell_img=True, gmm_analysis=True, save_image=True, save_ome_tiff=True):
     
     """
     Process and stack images by normalizing them based on computed log-pixel shifts, and optionally save and plot the results.
@@ -118,6 +118,8 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, shift_in
         
         for marker_index, marker in enumerate(marker_dict):
             
+            skip_current_marker = marker in marker_to_skip
+            
             reference_index = sample_names.index(reference_sample[marker_index])
             
             print(f"Processing marker {marker}")
@@ -152,7 +154,7 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, shift_in
             reference_if_marker_raw_uint16 = np.rint(np.clip(reference_if_marker_raw_stretched, 0, 65535)).astype(np.uint16)
             
             # plot the actual original vs normalized images for comparison
-            if plot_img: 
+            if plot_img and not skip_current_marker: 
                 fig, (ax1, ax2) = plt.subplots(1, 2, dpi=dpi, figsize=(10, 5))
                 # Processing and plotting the first image
                 lower_bound = np.percentile(if_marker_raw_uint16.ravel(), 0.1)
@@ -175,7 +177,7 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, shift_in
                 plt.show()  
                 
             # Create a figure with three subplots side by side
-            if plot_dist: 
+            if plot_dist and not skip_current_marker: 
                 fig, ax = plt.subplots(1, 1, figsize=(5, 5), dpi=dpi)
                 
                 plot_line_histogram(ax, if_marker_raw_uint16, f'{sample_names[sample_index]} {marker} - Original', n_bins=num_bins, alpha=0.5)
@@ -192,7 +194,7 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, shift_in
                 plt.show()
                 
                 
-            if plot_single_cell_corr: 
+            if plot_single_cell_corr and not skip_current_marker: 
                 mesmer_mask_fname = segmentation_mask_path[sample_index]
                 cell_mask = imread(mesmer_mask_fname)
                 cell_mask_resized = resize(cell_mask, if_marker_raw_uint16.shape, order=0)
