@@ -329,7 +329,7 @@ def process_samples_per_marker(if_dask_arrays, sample_names, marker_list, bin_co
                 tile_scaled = tile_scaled
             
             # Plot the histogram
-            ax = axes[sample_index]
+            ax = axes[0，sample_index]
             hist, bin_edges = np.histogram(tile_scaled, bins=bin_counts)
             ax.plot(bin_edges[:-1], hist, label=f'{sample_name}', alpha=0.7)
             
