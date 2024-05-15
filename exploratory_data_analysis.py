@@ -14,7 +14,7 @@ Dependencies:
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.io import imread
-from skimage.transform import resize
+from skimage.transform import resize 
 
 def preprocess_raw(image):
     """
@@ -31,7 +31,7 @@ def preprocess_raw(image):
     ch[ch == -np.inf] = 0
     return ch
 
-def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subplots_per_row, if_grid, dpi=300, exclude_zero=False, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
+def process_samples(if_dask_arrays, sample_names, marker_list, marker_to_plot, bin_counts, subplots_per_row, if_grid, dpi=300, exclude_zero=False, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
     """
     Process and plot the intensity distributions of imaging markers from multiple samples, potentially applying a tissue mask.
 
@@ -64,12 +64,18 @@ def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subpl
     if tissue_mask and (tissue_mask_paths is None or not isinstance(tissue_mask_paths, dict)):
         raise ValueError("tissue_mask is True but tissue_mask_paths is not provided or not a dictionary")
     
-    num_markers = len(marker_list)
+    num_markers = sum(1 for marker in marker_list if marker in marker_to_plot)
+    # num_markers = len(marker_list)
     rows_needed = np.ceil(num_markers / subplots_per_row).astype(int)
     fig, axes = plt.subplots(rows_needed, subplots_per_row, figsize=(20, rows_needed * 4), dpi=dpi, squeeze=False)
     axes = axes.flatten()
     
+    plotted_marker_index = 0
+    
     for marker_index, marker_name in enumerate(marker_list):
+        if marker_name not in marker_to_plot:
+            continue  # Skip markers not in the marker_to_plot list
+            
         print(f"####################Processing {marker_name}####################")
         min_list = []
         max_list = []
@@ -121,7 +127,12 @@ def process_samples(if_dask_arrays, sample_names, marker_list, bin_counts, subpl
         print(f"Plotting the pixel intensidty distribution......")
         hist_list = []
         bin_edge_list = []
-        ax = axes[marker_index]
+        
+        # ax = axes[marker_index]
+        
+        ax = axes[plotted_marker_index]
+        plotted_marker_index += 1
+        
         for dask_array, sample_name in zip(if_dask_arrays, sample_names):
             IF_dask_array = dask_array[marker_index]
             tile_raw = IF_dask_array.compute()
@@ -272,7 +283,7 @@ def process_feature_samples(feature_data, sample_names, marker_list, bin_counts,
 
 
 
-def process_samples_per_marker(if_dask_arrays, sample_names, marker_list, bin_counts, if_grid, dpi=300, exclude_zero=False, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
+def process_samples_per_marker(if_dask_arrays, sample_names, marker_list, marker_to_plot, bin_counts, if_grid, dpi=300, exclude_zero=False, tissue_mask=True, tissue_mask_paths=None, xlims=None, ylims=None, save_filename=None):
     """
     Process and plot histograms of pixel intensities per marker across multiple samples, optionally applying a tissue mask.
 
@@ -298,6 +309,9 @@ def process_samples_per_marker(if_dask_arrays, sample_names, marker_list, bin_co
     
     # Iterate over each marker
     for marker_index, marker_name in enumerate(marker_list):
+        if marker_to_plot and marker_name not in marker_to_plot:
+            continue 
+            
         print(f"####################Processing {marker_name}####################")
         
         # Setup the figure for the current marker with 1 row and num_samples columns
