@@ -59,7 +59,7 @@ def calculate_shift_in_log_pixels(results_range, keys, bin_counts, shifts_fft_di
     return shift_in_log_pixels_dict
 
 
-def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, marker_to_skip, shift_in_log_pixels_dict, reference_sample, num_bins, output_directory, dpi=300, segmentation_mask_path=None, plot_img=True, plot_dist=True, plot_single_cell_corr=True, plot_single_cell_img=True, gmm_analysis=True, save_image=True, save_ome_tiff=True):
+def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, marker_to_normalize, shift_in_log_pixels_dict, reference_sample, num_bins, output_directory, dpi=300, segmentation_mask_path=None, plot_img=True, plot_dist=True, plot_single_cell_corr=True, plot_single_cell_img=True, gmm_analysis=True, save_image=True, save_ome_tiff=True):
     
     """
     Process and stack images by normalizing them based on computed log-pixel shifts, and optionally save and plot the results.
@@ -118,7 +118,9 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, marker_t
         
         for marker_index, marker in enumerate(marker_dict):
             
-            skip_current_marker = marker in marker_to_skip
+            # Check if the current marker is in marker_to_normalize
+            if marker not in marker_to_normalize:
+                continue
             
             reference_index = sample_names.index(reference_sample[marker_index])
             
@@ -154,7 +156,7 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, marker_t
             reference_if_marker_raw_uint16 = np.rint(np.clip(reference_if_marker_raw_stretched, 0, 65535)).astype(np.uint16)
             
             # plot the actual original vs normalized images for comparison
-            if plot_img and not skip_current_marker: 
+            if plot_img: 
                 fig, (ax1, ax2) = plt.subplots(1, 2, dpi=dpi, figsize=(10, 5))
                 # Processing and plotting the first image
                 lower_bound = np.percentile(if_marker_raw_uint16.ravel(), 0.1)
@@ -177,7 +179,7 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, marker_t
                 plt.show()  
                 
             # Create a figure with three subplots side by side
-            if plot_dist and not skip_current_marker: 
+            if plot_dist: 
                 fig, ax = plt.subplots(1, 1, figsize=(5, 5), dpi=dpi)
                 
                 plot_line_histogram(ax, if_marker_raw_uint16, f'{sample_names[sample_index]} {marker} - Original', n_bins=num_bins, alpha=0.5)
@@ -194,7 +196,7 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, marker_t
                 plt.show()
                 
                 
-            if plot_single_cell_corr and not skip_current_marker: 
+            if plot_single_cell_corr: 
                 mesmer_mask_fname = segmentation_mask_path[sample_index]
                 cell_mask = imread(mesmer_mask_fname)
                 cell_mask_resized = resize(cell_mask, if_marker_raw_uint16.shape, order=0)
@@ -264,7 +266,7 @@ def process_and_stack_images(if_dask_arrays, sample_names, marker_dict, marker_t
             if save_image: 
                 processed_images_stack.append(if_marker_shifted_uint16)
         
-        if save_image:
+        if save_image and processed_images_stack:
             stacked_images = np.stack(processed_images_stack, axis=0)
             # check if each sample directory exists or not in the save directory
             folder_path = os.path.join(output_directory, sample_names[sample_index])
