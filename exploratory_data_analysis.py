@@ -191,6 +191,192 @@ def process_samples(if_dask_arrays, sample_names, marker_list, marker_to_plot, b
 
 
 
+
+def process_samples2(if_dask_arrays, sample_names, marker_list, marker_to_plot, bin_counts, subplots_per_row, if_grid, dpi=300, exclude_zero=False, tissue_mask=True, tissue_mask_paths=None, cell_mask=False, cell_mask_paths=None, xlims=None, ylims=None, save_filename=None):
+    """
+    Process and plot the intensity distributions of imaging markers from multiple samples, potentially applying a tissue mask.
+
+    Parameters:
+    if_dask_arrays (list of dask.array.Array): List of Dask arrays where each array corresponds to a different sample.
+    sample_names (list of str): Names of the samples corresponding to each Dask array.
+    marker_list (list of str): List of markers to be processed.
+    bin_counts (int): Number of bins for histogram plotting.
+    subplots_per_row (int): Number of subplots to be displayed in each row of the resulting plot.
+    if_grid (bool): Flag to display grid lines in the plots.
+    dpi (int): Dots per inch (resolution) of the plotted figures.
+    exclude_zero (bool): If True, zero values are excluded from analysis and plotting.
+    tissue_mask (bool): If True, applies a tissue mask provided in `tissue_mask_paths`.
+    tissue_mask_paths (dict, optional): Dictionary mapping sample names to file paths of tissue masks.
+    cell_mask (bool): If True, applies a cell segmentation mask provided in `cell_mask_paths`.
+    cell_mask_paths (dict, optional): Dictionary mapping sample names to file paths of cell segmentation masks.
+    xlims (list, optional): List of x-axis limits for each subplot.
+    ylims (list, optional): List of y-axis limits for each subplot.
+    save_filename (str, optional): If provided, the plot will be saved to this filename.
+
+    Returns:
+    tuple: A tuple containing two dictionaries:
+           - The first dictionary maps each marker to its range of pixel intensities across all samples.
+           - The second dictionary maps each marker to histograms of pixel intensities.
+
+    Raises:
+    ValueError: If `tissue_mask` is True and `tissue_mask_paths` is not provided or not a dictionary.
+    """
+    results_range = {}
+    results_hist = {}
+    
+    if tissue_mask and (tissue_mask_paths is None or not isinstance(tissue_mask_paths, dict)):
+        raise ValueError("tissue_mask is True but tissue_mask_paths is not provided or not a dictionary")
+    
+    if cell_mask and (cell_mask_paths is None or not isinstance(cell_mask_paths, dict)):
+        raise ValueError("cell_mask is True but cell_mask_paths is not provided or not a dictionary")
+    
+    num_markers = sum(1 for marker in marker_list if marker in marker_to_plot)
+    rows_needed = np.ceil(num_markers / subplots_per_row).astype(int)
+    fig, axes = plt.subplots(rows_needed, subplots_per_row, figsize=(20, rows_needed * 4), dpi=dpi, squeeze=False)
+    axes = axes.flatten()
+    
+    plotted_marker_index = 0
+    
+    for marker_index, marker_name in enumerate(marker_list):
+        if marker_name not in marker_to_plot:
+            continue  # Skip markers not in the marker_to_plot list
+            
+        print(f"####################Processing {marker_name}####################")
+        min_list = []
+        max_list = []
+        global_min = float('inf')
+        global_max = float('-inf')
+        marker_hist_data = []
+        
+        # First loop: Determine global min and max for the marker across all samples
+        for dask_array, sample_name in zip(if_dask_arrays, sample_names):
+            print(f"Processing {sample_name}......")
+            IF_dask_array = dask_array[marker_index]
+            tile_raw = IF_dask_array.compute()
+            tile_scaled = preprocess_raw(tile_raw)
+            
+            if exclude_zero: 
+                tile_scaled = tile_scaled[tile_scaled>0] 
+            
+            if tissue_mask:
+                print(f"loading contour mask for sample {sample_name}")
+                HE_tissue_mask_path = tissue_mask_paths.get(sample_name)
+                if not HE_tissue_mask_path:
+                    raise ValueError(f"Tissue mask path for sample {sample_name} is not provided in tissue_mask_paths")
+                
+                HE_tissue_mask = imread(HE_tissue_mask_path)
+                
+                if HE_tissue_mask.shape != tile_scaled.shape:
+                    contour_mask = resize(HE_tissue_mask, tile_scaled.shape, order=0)
+                else:
+                    contour_mask = HE_tissue_mask   
+                    
+                tile_scaled = tile_scaled[contour_mask]
+                
+            if cell_mask:
+                print(f"loading cell segmentation mask for sample {sample_name}")
+                cell_seg_mask_path = cell_mask_paths.get(sample_name)
+                if not cell_seg_mask_path:
+                    raise ValueError(f"Cell segmentation mask path for sample {sample_name} is not provided in cell_mask_paths")
+
+                cell_seg_mask = imread(cell_seg_mask_path)
+
+                if cell_seg_mask.shape != tile_scaled.shape:
+                    cell_seg_mask = resize(cell_seg_mask, tile_scaled.shape, order=0)
+                
+                cell_seg_mask_binary = cell_seg_mask != 0
+                tile_scaled = tile_scaled[cell_seg_mask_binary]
+            
+            min_val = tile_scaled.min()
+            max_val = tile_scaled.max()
+            min_list.append(min_val)
+            max_list.append(max_val)
+            
+            global_min = min(global_min, min_val)
+            global_max = max(global_max, max_val)
+        
+        results_range[marker_name] = {"min_list": min_list, "max_list": max_list, "global_min": global_min, "global_max": global_max}
+        
+        # Second loop: Plot histograms using the global min and max
+        print(f"Plotting the pixel intensity distribution......")
+        hist_list = []
+        bin_edge_list = []
+        
+        ax = axes[plotted_marker_index]
+        plotted_marker_index += 1
+        
+        for dask_array, sample_name in zip(if_dask_arrays, sample_names):
+            IF_dask_array = dask_array[marker_index]
+            tile_raw = IF_dask_array.compute()
+            tile_scaled = preprocess_raw(tile_raw)
+            
+            if exclude_zero: 
+                tile_scaled = tile_scaled[tile_scaled>0]
+            
+            if tissue_mask:
+                print(f"loading contour mask for sample {sample_name}")
+                HE_tissue_mask_path = tissue_mask_paths.get(sample_name)
+                if not HE_tissue_mask_path:
+                    raise ValueError(f"Tissue mask path for sample {sample_name} is not provided in tissue_mask_paths")
+                
+                HE_tissue_mask = imread(HE_tissue_mask_path)
+                
+                if HE_tissue_mask.shape != tile_scaled.shape:
+                    contour_mask = resize(HE_tissue_mask, tile_scaled.shape, order=0)
+                else:
+                    contour_mask = HE_tissue_mask  
+                tile_scaled = tile_scaled[contour_mask]
+            
+            if cell_mask:
+                print(f"loading cell segmentation mask for sample {sample_name}")
+                cell_seg_mask_path = cell_mask_paths.get(sample_name)
+                if not cell_seg_mask_path:
+                    raise ValueError(f"Cell segmentation mask path for sample {sample_name} is not provided in cell_mask_paths")
+
+                cell_seg_mask = imread(cell_seg_mask_path)
+
+                if cell_seg_mask.shape != tile_scaled.shape:
+                    cell_seg_mask = resize(cell_seg_mask, tile_scaled.shape, order=0)
+                
+                cell_seg_mask_binary = cell_seg_mask != 0
+                tile_scaled = tile_scaled[cell_seg_mask_binary]
+
+            hist, bin_edges = np.histogram(tile_scaled, bins=bin_counts, range=(global_min, global_max))
+            hist_list.append(hist)
+            bin_edge_list.append(bin_edges)
+            ax.plot(bin_edges[:-1], hist, label=f'{sample_name}', alpha=0.7)
+        
+        results_hist[marker_name] = {"hist_list": hist_list, "bin_edge_list": bin_edge_list}
+        ax.set_title(f'{marker_name}')
+        ax.set_xlabel('Log Scale Pixel Intensity')
+        ax.set_ylabel('Frequency')
+        ax.legend(loc='upper right')  # This line ensures every subplot has a legend
+        ax.grid(if_grid)
+        
+        # Set x and y axis limits if specified
+        if xlims and marker_index < len(xlims):
+            ax.set_xlim(xlims[marker_index])
+        if ylims and marker_index < len(ylims):
+            ax.set_ylim(ylims[marker_index])
+            
+    # Hide any unused subplots
+    for i in range(num_markers, len(axes)):
+        axes[i].axis('off')
+
+    plt.tight_layout()
+    
+    if save_filename:
+        plt.savefig(save_filename)  # Save the figure to the specified file
+        print(f"Figure saved as '{save_filename}' in current working directory")
+        
+    plt.show()
+    
+    return results_range, results_hist
+
+
+
+
+
 def process_feature_samples(feature_data, sample_names, marker_list, bin_counts, subplots_per_row, if_grid, dpi=300, xlims=None, ylims=None, save_filename=None):
     """
     Process feature data from multiple samples and plot histograms of cell mean intensities for each marker.
