@@ -39,11 +39,18 @@ conda env create -f environment.yml
 conda activate cycif-normalization-env
 ```
 
+OR
+
+Install through PyPI: <a>https://pypi.org/project/uniform-norm/<a/>
+
+```bash
+pip install uniform-cycif
+```
 
 :test_tube: Workflow
 ```UniFORM-calculate-histogram.py``` -> ```UniFORM-landmark-finetuning.py (optional)``` --> ```UniFORM-normalization.py```
 
-### Exploratory Data Analysis
-To begin the normalization process, first analyze the data using:
+### Usage
+
 
 
