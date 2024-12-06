@@ -1,4 +1,4 @@
-<img align="left" width="50%" src="uniform-logo.jpg" alt="UniFORM Logo">
+<img align="left" width="20%" src="uniform-logo.jpg" alt="UniFORM Logo">
 
 # UniFORM: Towards Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging
 
