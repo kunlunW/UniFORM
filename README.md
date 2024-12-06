@@ -83,7 +83,7 @@ shifts_fft_dict = uniform_model.normalize_and_plot_distributions(
     histograms=results_hist,            # Histograms from the previous step
     markers=["CD45", "ECAD"],           # Markers to process
     reference=references,               # Reference sample for each marker
-    landmarks=filtered_landmark,        # Optional fine-tuned landmarks for normalization, don't flag this for fully automatic pipeline
+    landmarks=user_landmark,        # Optional fine-tuned landmarks for normalization, don't flag this for fully automatic pipeline
 )
 
 shift_in_log_pixels_dict = uniform_model.calculate_shift_in_log_pixels(
