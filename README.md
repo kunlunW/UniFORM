@@ -1,15 +1,6 @@
-<img align="left" width="10%" src="uniform-logo.jpg" alt="UniFORM Logo">
+<img align="left" width="20%" src="file.png" alt="UniFORM Logo">
 
 # UniFORM: Towards Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging
-
-
-<div style="display: flex; align-items: center;">
-
-  <img src="uniform-logo.jpg" alt="UniFORM Logo" style="width: 10%; margin-right: 20px;">
-
-  <h1 style="margin: 0;">UniFORM: Towards Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging</h1>
-
-</div>
 
 
 ## :star2: About the Project
