@@ -1,22 +1,19 @@
-<div align="center">
+<img align="left" width="180" src="uniform-logo.jpg" alt="UniFORM Logo">
 
-  <h1> UniFORM: Towards Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging </h1>
-  
-  <p>
+# UniFORM: Towards Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging
+
+<p align="center">
     Official GitHub documentation of the UniFORM Normalization Project
-  </p>
-  
-</div>
+</p>
 
 
-  
 
 ## :star2: About the Project
 
-
 ### :camera: Overview
 
-UniFORM normalization pipeline both on pixel-level and feature-level, enabling robust, scalable preprocessing for high-dimensional CyCIF data. This pipeline allows users to normalize CyCIF images and data across multiple samples to facilitate comparative and quantitative analysis.
+UniFORM normalization pipeline operates both on pixel-level and feature-level, enabling robust, scalable preprocessing for high-dimensional CyCIF data. This pipeline allows users to normalize CyCIF images and data across multiple samples to facilitate comparative and quantitative analysis.
+
 
 
 ### :dart: Tech Stack
@@ -35,31 +32,23 @@ UniFORM normalization pipeline both on pixel-level and feature-level, enabling r
     <li>scikit-fda</li>
 </ul>
 
-
-
 ## 	:toolbox: Getting Started
-
 
 <!-- Installation -->
 :gear: Installation
-It is highly recommended to create a virtual environment for the CyCIF normalization. You can set up the environment using the provided YAML file:
+It is highly recommended to create a virtual environment for the UniFORM normalization. You can set up the environment using the provided YAML file:
 
 You can install the latest version of the packages above using environment.yml
 ```bash
 conda env create -f environment.yml
 conda activate cycif-normalization-env
 ```
-In case there's package comnflicts or incompatibility, you can use my environment setup
-```bash
-conda env create -f environment-mark-version.yml
-conda activate cycif-normalization-env
-```
+
 
 :test_tube: Workflow
-```exploratory_data_analysis.py``` -> ```normalize.py``` --> ```image_transformation.py```
+```UniFORM-calculate-histogram.py``` -> ```UniFORM-landmark-finetuning.py (optional)``` --> ```UniFORM-normalization.py```
 
 ### Exploratory Data Analysis
 To begin the normalization process, first analyze the data using:
-
 
 
