@@ -41,7 +41,7 @@ conda activate cycif-normalization-env
 
 OR
 
-Install through PyPI: <a>https://pypi.org/project/uniform-norm/<a/>
+Install through PyPI: <a>https://pypi.org/project/uniform-cycif/<a/>
 
 ```bash
 pip install uniform-cycif
