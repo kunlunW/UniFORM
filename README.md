@@ -2,9 +2,6 @@
 
 # UniFORM: Towards Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging
 
-<p align="center">
-    Official GitHub documentation of the UniFORM Normalization Project
-</p>
 
 
 
