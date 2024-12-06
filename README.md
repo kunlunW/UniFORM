@@ -56,8 +56,6 @@ pip install uniform-cycif
 
 ```
 # Importing the Package
-import coexist
-
 import uniform_cycif
 
 # 1. Initialize the model with your AnnData object
