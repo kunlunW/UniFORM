@@ -1,9 +1,9 @@
 <div align="center">
 
-  <h1> Landmark-FDA CyCIF Normalization </h1>
+  <h1> UniFORM: Towards Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging </h1>
   
   <p>
-    Official GitHub documentation of the Landmark-FDA CyCIF Normalization Project
+    Official GitHub documentation of the UniFORM Normalization Project
   </p>
   
 </div>
@@ -16,7 +16,7 @@
 
 ### :camera: Overview
 
-Universal CyCIF (Cyclic Immunofluorescence) normalization pipeline both on pixel-level and feature-level, enabling robust, scalable preprocessing for high-dimensional CyCIF data. This pipeline allows users to normalize CyCIF images and data across multiple samples to facilitate comparative and quantitative analysis.
+UniFORM normalization pipeline both on pixel-level and feature-level, enabling robust, scalable preprocessing for high-dimensional CyCIF data. This pipeline allows users to normalize CyCIF images and data across multiple samples to facilitate comparative and quantitative analysis.
 
 
 ### :dart: Tech Stack
