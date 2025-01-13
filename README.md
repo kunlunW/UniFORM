@@ -30,6 +30,8 @@ UniFORM normalization pipeline operates both on pixel-level and feature-level, e
 
 ## 	:toolbox: Getting Started
 
+This repo is currently under development. 
+
 <!-- Installation -->
 :gear: Installation
 
@@ -39,14 +41,6 @@ git clone https://github.com/kunlunw/uniform_cycif.git
 cd uniform_cycif
 conda env create -f environment.yml
 conda activate cycif-normalization-env
-```
-
-OR
-
-Install through PyPI: <a>https://pypi.org/project/uniform-cycif/<a/>
-
-```bash
-pip install uniform-cycif
 ```
 
 :test_tube: Workflow
