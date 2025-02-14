@@ -28,7 +28,7 @@ UniFORM normalization pipeline operates both on pixel-level and feature-level, e
     <li>scikit-fda</li>
 </ul>
 
-## 	:toolbox: Getting Started
+## 	:toolbox: Getting Started (Repo undergoing update, new version coming soon!)
 
 This repo is currently under development. 
 
@@ -46,7 +46,7 @@ conda activate cycif-normalization-env
 :test_tube: Workflow
 ```UniFORM-calculate-histogram``` -> ```UniFORM-landmark-finetuning (optional)``` --> ```UniFORM-normalization```
 
-### Usage
+### Usage (Repo undergoing update, new version coming soon!)
 
 ```
 # Importing the Package
