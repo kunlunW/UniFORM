@@ -11,13 +11,15 @@
      style="
        margin: 0;
        padding: 0.5em 0;
-       font-size: 2em;       /* same as GitHub’s h1 */
+       font-size: 3em;       /* same as GitHub’s h1 */
        font-weight: normal;  /* override the default bold */
      ">
   <strong><em>UniFORM</em></strong>: 
   <strong>Uni</strong>versal Immuno<strong>F</strong>luorescence 
   N<strong>OR</strong>malization for <strong>M</strong>ultiplex Tissue Imaging
 </div>
+
+<br>
 
 
 This is the GitHub Repository for article "UniFORM: Towards Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging" DOI: [10.1101/2024.12.06.626879](https://pubmed.ncbi.nlm.nih.gov/39713407/)
