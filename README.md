@@ -96,9 +96,9 @@ Before you begin normalization, download the example datasets:
 
 | Dataset Type                     | Format           | Download Link                                                          |
 |----------------------------------|------------------|--------------------------------------------------------------------------------|
-| **Feature‑Level (Pickle)**       | `*.pkl` files    | ``           |
-| **Feature‑Level (AnnData)**      | `*.h5ad` file    | ``           |
-| **Pixel‑Level (OME‑TIFF)**       | `*.ome.tiff`     | ``             |
+| **Feature‑Level (Pickle)**       | `*.pkl` files    | `being assembled and will be available soon`           |
+| **Feature‑Level (AnnData)**      | `*.h5ad` file    | `being assembled and will be available soon`           |
+| **Pixel‑Level (OME‑TIFF)**       | `*.ome.tiff`     | `being assembled and will be available soon`             |
 
 
 
@@ -138,7 +138,7 @@ Once installation completes, choose your tutorial based on the normalization pip
 
 #### Pixel-Level Normalization
 
-- Follow [Tutorial_PRAD_prostate_pixel-level.ipynb](Tutorial_PRAD_prostate_pixel-level.ipynb)
+- Follow [Tutorial_PRAD_prostate_pixel-level.ipynb](Tutorial_PRAD_prostate_pixel-level.ipynb) (being assembled and will be available soon)
  
 
 Happy normalizing! 🎉
