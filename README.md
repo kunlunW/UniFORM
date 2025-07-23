@@ -11,7 +11,7 @@
      style="
        margin: 0;
        padding: 0.5em 0;
-       font-size: 3em;       /* same as GitHub’s h1 */
+       font-size: 5em;       /* same as GitHub’s h1 */
        font-weight: normal;  /* override the default bold */
      ">
   <strong><em>UniFORM</em></strong>: 
