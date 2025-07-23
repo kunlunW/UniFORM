@@ -20,7 +20,7 @@ This is the GitHub Repository for article "UniFORM: Towards Universal ImmunoFluo
 1. **UniFORM** normalizes both feature‑ and pixel‑level multiplex‐imaging data.  
 2. Applies **automatic rigid‐landmark functional registration** to align signal distributions while preserving biological integrity.  
 3. **Outperforms existing methods** by:  
-   - Preserving overall distribution shape  
+   - Preserving overall distribution shape (preserve biology) 
    - Maintaining mutual exclusivity of mutually exclusive markers  
    - Improving clustering consistency  
    - Enhancing batch mixing (kBET)  
@@ -28,6 +28,7 @@ This is the GitHub Repository for article "UniFORM: Towards Universal ImmunoFluo
 
 
 ![](images/UniFORM_Fig1.jpg)
+**Figure 1** of the UniFORM paper
 
 
 
