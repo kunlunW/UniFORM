@@ -142,14 +142,14 @@ Once installation completes, choose your tutorial based on the normalization pip
 #### Feature-Level Normalization
 
 - **AnnData input**  
-  Follow [PRAD_prostate_feature-level-anndata-version.ipynb](notebooks/PRAD_prostate_feature-level-anndata-version.ipynb)
+  Follow [PRAD_prostate_feature-level-anndata-version.ipynb](PRAD_prostate_feature-level-anndata-version.ipynb)
 
 - **Pickle input**  
-  Follow [PRAD_prostate_feature-level-pickle-version.ipynb](notebooks/PRAD_prostate_feature-level-pickle-version.ipynb)
+  Follow [PRAD_prostate_feature-level-pickle-version.ipynb](PRAD_prostate_feature-level-pickle-version.ipynb)
 
 #### Pixel-Level Normalization
 
-- Follow [PRAD_prostate_pixel-level.ipynb](notebooks/PRAD_prostate_pixel-level.ipynb)
+- Follow [PRAD_prostate_pixel-level.ipynb](PRAD_prostate_pixel-level.ipynb)
  
 
 Happy normalizing! 🎉
