@@ -1,97 +1,154 @@
-<img align="left" width="20%" src="file.png" alt="UniFORM Logo">
+<div align="center" style="margin:0; padding:0;">
+  <img
+    src="images/UniFORM_logo.png"
+    alt="UniFORM Logo"
+    style="display:block; margin:0; padding:0; width:70%; height:auto;"
+  />
+</div>
 
-# UniFORM: Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging
+<!-- Title immediately after, also resetting margins -->
+<div align="center"
+     style="
+       margin: 0;
+       padding: 0.5em 0;
+       font-size: 2em;       /* same as GitHub’s h1 */
+       font-weight: normal;  /* override the default bold */
+     ">
+  <strong><em>UniFORM</em></strong>: 
+  <strong>Uni</strong>versal Immuno<strong>F</strong>luorescence 
+  N<strong>OR</strong>malization for <strong>M</strong>ultiplex Tissue Imaging
+</div>
 
 
-## :star2: About the Project
-
-### :camera: Overview
-
-UniFORM normalization pipeline operates both on pixel-level and feature-level, enabling robust, scalable preprocessing for high-dimensional CyCIF data. This pipeline allows users to normalize CyCIF images and data across multiple samples to facilitate comparative and quantitative analysis.
-
-![](uniform-github-fig_page.jpg)
+This is the GitHub Repository for article "UniFORM: Towards Universal ImmunoFluorescence Normalization for Multiplex Tissue Imaging" DOI: [10.1101/2024.12.06.626879](https://pubmed.ncbi.nlm.nih.gov/39713407/)
 
 
-### :dart: Tech Stack
+
+## :star2: Highlights
+
+1. **UniFORM** normalizes both feature‑ and pixel‑level multiplex‐imaging data.  
+2. Applies **automatic rigid‐landmark functional registration** to align signal distributions while preserving biological integrity.  
+3. **Outperforms existing methods** by:  
+   - Preserving overall distribution shape  
+   - Maintaining mutual exclusivity of co‑expressed markers  
+   - Improving clustering consistency  
+   - Enhancing batch mixing (kBET)  
+4. Achieves **robust batch correction** across CyCIF, ORION, and COMET platforms, enabling more reliable downstream analyses.  
+
+
+![](images/UniFORM_Fig1.jpg)
+
+
+
+## Feature-Level Normalization Inputs
+
+UniFORM’s feature‐level pipeline accepts two formats. Choose the one that fits your workflow:
+
+<div align="center">
+  <table >
+    <tr>
+      <td align="center">
+        <!-- Placeholder for AnnData logo -->
+        <img src="images/anndata_icon.svg" alt="AnnData Format" width="120" />
+        <p><strong>AnnData<br/><code>.h5ad</code></strong></p>
+      </td>
+      <td align="center">
+        <!-- Placeholder for Pickle logo -->
+        <img src="images/pkl_icon.webp" alt="Pickle Files" width="120" />
+        <p><strong>Pickle Files<br/><code>.pkl</code></strong></p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
+## Pixel-Level Normalization Inputs
+
+UniFORM’s pixel‐level pipeline supports high‐content microscopy formats:
+
+<div align="center">
+  <table >
+    <tr>
+      <td align="center">
+        <!-- Placeholder for OME‑TIFF logo -->
+        <img src="images/ome_logo.png" alt="OME‑TIFF Format" width="120" />
+        <p><strong>OME‑TIFF<br/><code>.ome.tiff</code></strong></p>
+      </td>
+      <td align="center">
+        <!-- Placeholder for TIFF logo -->
+        <img src="images/stacked_tiff_logo.png" alt="TIFF Format" width="120" />
+        <p><strong>TIFF<br/><code>.tiff</code></strong></p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+## :toolbox: Dependencies
 
 <ul>
+    <li>anndata</li>
     <li>numpy</li>
-    <li>matplotlib</li>
     <li>pandas</li>
-    <li>dask</li>
-    <li>zarr</li>
-    <li>scikit-image</li>
-    <li>tifffile</li>
-    <li>pyometiff</li>
+    <li>matplotlib</li>
+    <li>plotly</li>
+    <li>scikit-fda</li>
     <li>scikit-learn</li>
     <li>scipy</li>
-    <li>scikit-fda</li>
 </ul>
 
-## 	:toolbox: Getting Started (Repo undergoing update, new version coming soon!)
 
-This repo is currently under development. 
+## :cloud: Downloading the Data
 
-<!-- Installation -->
-:gear: Installation
+Before you begin normalization, download the example datasets:
 
-You can install the latest version of the packages above using environment.yml
-```bash
-git clone https://github.com/kunlunw/uniform_cycif.git
-cd uniform_cycif
-conda env create -f environment.yml
-conda activate cycif-normalization-env
-```
-
-:test_tube: Workflow
-```UniFORM-calculate-histogram``` -> ```UniFORM-landmark-finetuning (optional)``` --> ```UniFORM-normalization```
-
-### Usage (Repo undergoing update, new version coming soon!)
-
-```
-# Importing the Package
-import uniform_cycif
-
-# 1. Initialize the model with your AnnData object
-uniform_model = uniform_cycif.UniFORM(adata=combined_adata)
-
-# 2. Calculate histograms for specific markers
-results_range, results_hist, gmm_curves = uniform_model.uniform_calculate_histogram(
-    adata=combined_adata,             # anndata object
-    marker_to_plot=["CD45", "ECAD"],  # Markers to process, to process all markers, do not flag this argument
-    rep="X"                           # Use raw data
-)
-
-# 4. Optional step to perform landmark finetuning
-uniform_model.normalize_and_plot_distributions_plotly(
-    adata=combined_adata,               # anndata object
-    histograms=results_hist,            # Histograms from the previous step
-    gmm_curves=gmm_curves,              # GMM curves for each marker and sample
-    markers_to_plot=["CD45", "ECAD"],   # Markers to include in the plot
-    output_path="/path/to/output",      # Directory to save output HTML files
-)
-
-# 5. Normalize data and calculate FFT-based shifts
-shifts_fft_dict = uniform_model.normalize_and_plot_distributions(
-    adata=combined_adata,               # anndata object
-    histograms=results_hist,            # Histograms from the previous step
-    markers=["CD45", "ECAD"],           # Markers to process
-    reference=references,               # Reference sample for each marker
-    landmarks=user_landmark,        # Optional fine-tuned landmarks for normalization, don't flag this for fully automatic pipeline
-)
-
-shift_in_log_pixels_dict = uniform_model.calculate_shift_in_log_pixels(
-    data_range=range_dict,              # Data range dictionary
-    shifts_fft_dict=shifts_fft_dict,    # Shifts from the previous step
-)
-
-# 6. Normalize data and save the output to an AnnData object
-uniform_model.generate_normalized_feature(
-    shift_in_log_pixels_dict=shift_in_log_pixels_dict,  # Shift values
-    reference_sample=references,                        # Reference samples for each marker
-    output_directory="/path/to/output"                  # Output directory for AnnData
-)
+| Dataset Type                     | Format           | Download Link                                                          |
+|----------------------------------|------------------|--------------------------------------------------------------------------------|
+| **Feature‑Level (Pickle)**       | `*.pkl` files    | ``           |
+| **Feature‑Level (AnnData)**      | `*.h5ad` file    | ``           |
+| **Pixel‑Level (OME‑TIFF)**       | `*.ome.tiff`     | ``             |
 
 
-```
 
+## :gear: Getting Started
+
+Follow these steps to set up **UniFORM** in a fresh, isolated environment:
+
+1. **Clone the repository** 
+    ```
+    $ git clone https://github.com/kunlunW/UniFORM.git 
+    ``` 
+2. **Enter the project directory** 
+    ```
+    $ cd UniFORM  
+    ```
+3. **Create a new virtual environment** 
+    ```
+    $ conda create -n UniFORM-env python=3.8
+    ```  
+4. **Activate the environment**  
+    ```
+    $ conda activate UniFORM-env
+    ```
+5. **Install dependencies** 
+    ```
+    $ pip install -r requirements.txt  
+    ```
+Once installation completes, choose your tutorial based on the normalization pipeline and input format:
+
+#### Feature-Level Normalization
+
+- **AnnData input**  
+  Follow [PRAD_prostate_feature-level-anndata-version.ipynb](notebooks/PRAD_prostate_feature-level-anndata-version.ipynb)
+
+- **Pickle input**  
+  Follow [PRAD_prostate_feature-level-pickle-version.ipynb](notebooks/PRAD_prostate_feature-level-pickle-version.ipynb)
+
+#### Pixel-Level Normalization
+
+- Follow [PRAD_prostate_pixel-level.ipynb](notebooks/PRAD_prostate_pixel-level.ipynb)
+ 
+
+Happy normalizing! 🎉
+-KW

@@ -1,0 +1,9 @@
+anndata
+numpy
+pandas
+matplotlib
+plotly
+scikit-fda
+scikit-learn
+scipy
+tqdm
