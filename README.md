@@ -21,7 +21,7 @@ This is the GitHub Repository for article "UniFORM: Towards Universal ImmunoFluo
 2. Applies **automatic rigid‐landmark functional registration** to align signal distributions while preserving biological integrity.  
 3. **Outperforms existing methods** by:  
    - Preserving overall distribution shape  
-   - Maintaining mutual exclusivity of co‑expressed markers  
+   - Maintaining mutual exclusivity of mutually exclusive markers  
    - Improving clustering consistency  
    - Enhancing batch mixing (kBET)  
 4. Achieves **robust batch correction** across CyCIF, ORION, and COMET platforms, enabling more reliable downstream analyses.  
