@@ -129,7 +129,7 @@ def fit_two_component_gmm(
 
     # Determine negative cluster (lower maximum)
     neg_cluster, pos_cluster = (
-        (cluster_1, cluster_0) if cluster_0.max() < cluster_1.max()
+        (cluster_1, cluster_0) if cluster_0.max() > cluster_1.max()
         else (cluster_0, cluster_1)
     )
 
